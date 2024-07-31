@@ -33,5 +33,11 @@ export const useItemsStore = defineStore("items", {
         this.inventory[toIndex] = temp;
       }
     },
+    changeItem(id: number, count: number) {
+      const item = this.inventory.find(item => item.id === id);
+      if (item) {
+        item.count = Math.max(0, item.count - count);
+      }
+    }
   }
 })
