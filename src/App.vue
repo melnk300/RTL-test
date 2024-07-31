@@ -1,4 +1,26 @@
 <script setup lang="ts">
+import {useItemsStore} from "@/stores/items";
+import {computed, ref} from "vue";
+import Item from "@/components/item.vue";
+
+const itemsStore = useItemsStore()
+
+const items = computed(() => itemsStore.inventory)
+
+const draggingItem = ref<number | null>(null);
+
+const onDragStart = (id: number) => {
+  draggingItem.value = id;
+};
+
+const onDrop = (id: number) => {
+  console.log('Drop on item ID:', id);
+  if (draggingItem.value !== null) {
+    itemsStore.moveItem(draggingItem.value, id);
+  } else {
+    console.error("Dragging item was null on drop");
+  }
+};
 </script>
 
 <template>
@@ -20,18 +42,11 @@
       </div>
     </aside>
     <main>
-      <div class="item">
-        <div class="item-content"></div>
-        <div class="item-count">2</div>
-      </div>
-      <div class="item">
-        <div class="item-content"></div>
-        <div class="item-count">2</div>
-      </div>
-      <div class="item">
-        <div class="item-content"></div>
-        <div class="item-count">2</div>
-      </div>
+      <Item v-for="item in items" :key="item.id" :color="item.color" :count="item.count" :id="item.id"
+            @dragstart="onDragStart(item.id)"
+            @dragover.prevent
+            @drop.prevent="onDrop(item.id)"
+            :draggable="true"/>
     </main>
     <footer>
       <p class="skeleton"></p>
@@ -164,46 +179,6 @@ main {
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
 }
-
-.item {
-  position: relative;
-  padding: 3.5em;
-  border: 1px solid #4d4d4d;
-}
-
-.item-content {
-  position: relative;
-  content: " ";
-  background-color: rgba(51, 255, 233, 1);
-  width: 100%;
-  height: 100%;
-}
-
-.item-content:after {
-  position: absolute;
-  content: " ";
-  background-color: rgba(1, 188, 169, 0.6);
-  width: 100%;
-  height: 100%;
-  bottom: 10px;
-  left: 10px;
-  backdrop-filter: blur(5px);
-}
-
-.item-count {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  padding: 10px 15px;
-  border-radius: 10px 0 0 0;
-  color: #f6f6f6;
-  border-top: 1px solid #f6f6f6;
-  border-left: 1px solid #f6f6f6;
-}
-
-
-
-
 
 
 
