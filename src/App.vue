@@ -2,6 +2,7 @@
 import {useItemsStore} from "@/stores/items";
 import {computed, ref} from "vue";
 import Item from "@/components/item.vue";
+import Error from "@/components/error.vue";
 
 const itemsStore = useItemsStore()
 
@@ -44,10 +45,19 @@ const closePopup = () => {
   popupItemId.value = null
 };
 
+const showError = ref<boolean>(false)
+
 const decreaseCount = () => {
   if (popupItemId.value !== null) {
-    itemsStore.changeItem(popupItemId.value, inputCount.value);
-    closePopup();
+    if (popupItemCount.value - inputCount.value < 0) {
+      showError.value = true;
+      setTimeout(() => {
+        showError.value = false;
+      }, 2000);
+    } else {
+      itemsStore.changeItem(popupItemId.value, inputCount.value);
+      closePopup();
+    }
   }
 };
 </script>
@@ -117,7 +127,7 @@ const decreaseCount = () => {
     <footer>
       <p class="skeleton"></p>
     </footer>
-
+    <error v-if="showError" :duration="1" message="Недостаточно предметов" />
 
 
   </div>

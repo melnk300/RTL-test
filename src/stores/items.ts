@@ -37,6 +37,11 @@ export const useItemsStore = defineStore("items", {
       const item = this.inventory.find(item => item.id === id);
       if (item) {
         item.count = Math.max(0, item.count - count);
+
+        if (item.count === 0) {
+          item.color = "";
+          item.count = -1;
+        }
       }
     }
   }
